@@ -10,8 +10,212 @@ MODEL_PATH = APP_DIR / "potato_cnn_model.keras"
 CLASS_NAMES_PATH = APP_DIR / "classification_report.txt"
 IMAGE_SIZE = (128, 128)  # Matches IMG_SIZE in cnn_code_13.ipynb
 
-st.set_page_config(page_title="Potato Leaf Classifier", page_icon="🥔", layout="centered")
-st.title("🥔 Potato Leaf Disease Classifier")
+st.set_page_config(page_title="Potato Leaf Disease Classifier", page_icon="🌱", layout="centered")
+
+st.markdown("""
+<style>
+
+/* =================================
+   MAIN BACKGROUND
+================================= */
+.stApp {
+    background-color: #C8EDC7;
+}
+
+/* MAIN CONTENT */
+.block-container {
+    max-width: 1000px;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+/* UPLOAD TEXT */
+[data-testid="stFileUploader"] label {
+    color: white !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+}
+
+[data-testid="stFileUploaderDropzone"] span {
+    color: #1C1C4F !important;
+}
+/* =================================
+   HEADINGS
+================================= */
+h1, h2, h3, h4 {
+    color: #1C1C4F !important;
+    font-weight: 800 !important;
+}
+
+h1 {
+    text-align: center;
+    font-size: 42px !important;
+}
+
+/* NORMAL TEXT */
+.stMarkdown p,
+.stMarkdown span,
+.stCaption,
+[data-testid="stCaptionContainer"] {
+    color: #1C1C4F !important;
+}
+
+/* =================================
+   FILE UPLOADER
+================================= */
+[data-testid="stFileUploader"] {
+    background-color: #7E7EE6 !important;
+    border: 2px dashed #1C1C4F;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+/* UPLOAD DROPZONE - REMOVE BLACK AREA */
+[data-testid="stFileUploaderDropzone"] {
+    background-color: #C8EDC7 !important;
+    border: 2px dashed #1C1C4F !important;
+    border-radius: 12px;
+}
+
+/* UPLOADER TEXT */
+[data-testid="stFileUploaderDropzone"] span,
+[data-testid="stFileUploaderDropzone"] small {
+    color: #1C1C4F !important;
+}
+
+/* UPLOADER BUTTON */
+[data-testid="stFileUploader"] button {
+    background-color: #1C1C4F !important;
+    color: white !important;
+    border-radius: 8px;
+}
+
+/* =================================
+   PREDICTION BUTTON
+================================= */
+.stButton > button {
+    background-color: #7E7EE6 !important;
+    color: white !important;
+    border: 2px solid #1C1C4F;
+    border-radius: 12px;
+    width: 100%;
+    height: 50px;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+/* BUTTON HOVER */
+.stButton > button:hover {
+    background-color: #1C1C4F !important;
+    color: white !important;
+    border: 2px solid #1C1C4F;
+}
+
+/* =================================
+   PREDICTION RESULT 
+================================= */
+[data-testid="stAlert"] {
+    background-color: #7E7EE6 !important;
+    border: 2px solid #1C1C4F !important;
+    border-radius: 15px;
+}
+
+[data-testid="stAlert"] p,
+[data-testid="stAlert"] span,
+[data-testid="stAlert"] strong {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+
+/* =================================
+   MODEL SCORE CARD
+================================= */
+[data-testid="stMetric"] {
+    background-color: #7E7EE6 !important;
+    border: 2px solid #1C1C4F;
+    border-radius: 15px;
+    padding: 18px;
+}
+
+/* METRIC LABEL */
+[data-testid="stMetricLabel"],
+[data-testid="stMetricLabel"] p {
+    color: white !important;
+}
+
+/* METRIC VALUE */
+[data-testid="stMetricValue"],
+[data-testid="stMetricValue"] div {
+    color: white !important;
+    font-weight: 800 !important;
+}
+
+/* =================================
+   PROGRESS LABELS - DARK NAVY
+================================= */
+[data-testid="stProgress"] p,
+[data-testid="stProgress"] label,
+[data-testid="stProgress"] span {
+    color: #1C1C4F !important;
+    font-weight: 700 !important;
+}
+
+/* PROGRESS BAR TRACK */
+[data-testid="stProgressBar"] {
+    background-color: #C8EDC7 !important;
+}
+
+/* PROGRESS BAR FILL */
+[data-testid="stProgressBar"] > div > div {
+    background-color: #7E7EE6 !important;
+}
+
+/* =================================
+   LOADING SPINNER
+================================= */
+[data-testid="stSpinner"] {
+    background-color: #7E7EE6 !important;
+    border: 2px solid #1C1C4F;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+[data-testid="stSpinner"] p {
+    color: #1C1C4F !important;
+    font-weight: 700 !important;
+}
+
+/* SPINNER ICON */
+[data-testid="stSpinner"] svg {
+    color: #1C1C4F !important;
+}
+
+/* =================================
+   CAPTION
+================================= */
+.stCaption {
+    color: #1C1C4F !important;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* =================================
+   IMAGE
+================================= */
+[data-testid="stImage"] {
+    border-radius: 15px;
+}
+
+/* =================================
+   DIVIDER
+================================= */
+hr {
+    border-color: #7E7EE6 !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+st.title("🌿 Potato Leaf Disease Classifier")
 st.write("Upload a potato leaf photo to see the CNN prediction and its output score.")
 
 
@@ -43,30 +247,116 @@ except Exception as exc:
     st.info("Keep app.py, potato_cnn_model.keras, and classification_report.txt together in this folder.")
     st.stop()
 
-upload = st.file_uploader("Choose a leaf image", type=["jpg", "jpeg", "png"])
+
+# ==========================================
+# IMAGE UPLOAD
+# ==========================================
+
+upload = st.file_uploader(
+    "Choose a leaf image",
+    type=["jpg", "jpeg", "png"]
+)
+
 if upload is not None:
+
     try:
         image = Image.open(upload).convert("RGB")
+
     except (UnidentifiedImageError, OSError):
-        st.error("That file could not be opened as an image. Please choose a JPG or PNG.")
+        st.error("Invalid image! Please upload a JPG or PNG.")
         st.stop()
 
-    st.image(image, caption="Uploaded leaf", use_container_width=True)
-    if st.button("Predict disease", type="primary"):
-        resized = image.resize(IMAGE_SIZE)
-        # Keep raw 0–255 pixel values: the trained model has Rescaling(1/255) inside it.
-        batch = np.expand_dims(np.asarray(resized, dtype=np.float32), axis=0)
-        scores = np.asarray(model.predict(batch, verbose=0))[0].reshape(-1)
+    # Display uploaded image
+    st.image(
+        image,
+        caption="Uploaded leaf",
+        width="stretch"
+    )
+
+    # ==========================================
+    # PREDICTION BUTTON
+    # ==========================================
+
+    if st.button("🔍 Predict disease", type="primary"):
+
+        # Show loading spinner
+        with st.spinner("🌱 Processing image... Please wait"):
+
+            # Resize image
+            resized = image.resize(IMAGE_SIZE)
+
+            # Prepare image for CNN
+            batch = np.expand_dims(
+                np.asarray(resized, dtype=np.float32),
+                axis=0
+            )
+
+            # Get model predictions
+            scores = np.asarray(
+                model.predict(batch, verbose=0)
+            )[0].reshape(-1)
+
+        # ==========================================
+        # CHECK MODEL OUTPUT
+        # ==========================================
 
         if len(scores) != len(class_names):
-            st.error(f"Model returned {len(scores)} scores, but there are {len(class_names)} class labels.")
+
+            st.error(
+                f"Model returned {len(scores)} scores, "
+                f"but there are {len(class_names)} class labels."
+            )
+
             st.stop()
 
-        best_index = int(np.argmax(scores))
-        st.success(f"Prediction: **{display_name(class_names[best_index])}**")
-        st.metric("Model score", f"{float(scores[best_index]):.1%}")
-        st.subheader("Scores of classes basesd on the model's output")
-        for label, score in zip(class_names, scores):
-            st.progress(float(np.clip(score, 0.0, 1.0)), text=f"{display_name(label)} — {score:.1%}")
+        # ==========================================
+        # GET BEST PREDICTION
+        # ==========================================
 
-st.caption("The score is the model's output, not a confirmed diagnosis. Ask an agricultural expert if you are unsure.")
+        best_index = int(np.argmax(scores))
+
+        predicted_class = display_name(
+            class_names[best_index]
+        )
+
+        predicted_score = float(scores[best_index])
+
+        # ==========================================
+        # DISPLAY PREDICTION RESULT
+        # ==========================================
+
+        st.success(
+            f"Prediction: **{predicted_class}**"
+        )
+
+        # ==========================================
+        # DISPLAY MODEL SCORE
+        # ==========================================
+
+        st.metric(
+            "Model score",
+            f"{predicted_score:.1%}"
+        )
+
+        # ==========================================
+        # DISPLAY ALL CLASS SCORES
+        # ==========================================
+
+        st.subheader(
+            "Scores of classes based on the model's output"
+        )
+
+        for label, score in zip(class_names, scores):
+
+            st.progress(
+                float(np.clip(score, 0.0, 1.0)),
+                text=f"{display_name(label)} — {score:.1%}"
+            )
+
+# ==========================================
+# FOOTER
+# ==========================================
+
+st.caption(
+    "🌱 AI-assisted prediction — For informational purposes only."
+)
