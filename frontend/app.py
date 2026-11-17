@@ -352,11 +352,6 @@ if upload is not None:
                 float(np.clip(score, 0.0, 1.0)),
                 text=f"{display_name(label)} — {score:.1%}"
             )
-
-# ==========================================
-# FOOTER
-# ==========================================
-
 st.caption(
     "🌱 AI-assisted prediction — For informational purposes only."
 )
